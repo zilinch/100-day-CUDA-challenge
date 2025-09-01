@@ -1,0 +1,25 @@
+# CMake/Ninja build outputs
+build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/build.ninja
+**/.ninja_deps
+**/.ninja_log
+
+# Ignore per-day CMakeLists
+day*/CMakeLists.txt
+
+# Editor
+.vscode/
+
+# Compiled binaries/objects
+*.o
+*.obj
+*.exe
+*.ptx
+*.pdb
+*.so
+*.dll
+*.a
+*.lib
