@@ -40,7 +40,7 @@ int main() {
 
     GPUTimer timer;
 
-    int N = 4096;
+    int N = 2048;
     int d_k = 128;
 
     size_t size_QK = (size_t)N * d_k * sizeof(float);
@@ -63,7 +63,7 @@ int main() {
     cudaMemcpy(d_Q, h_Q.data(), size_QK, cudaMemcpyHostToDevice);
     cudaMemcpy(d_K, h_K.data(), size_QK, cudaMemcpyHostToDevice);
     float ms = timer.toc();
-    std::cout << "Memcpy time: " << ms << " ms" << std::endl;
+    // std::cout << "Memcpy time: " << ms << " ms" << std::endl;
 
     // // use CPU Wall Clock Timing
     // auto cpu_start = std::chrono::high_resolution_clock::now();
@@ -79,6 +79,18 @@ int main() {
 
     float alpha = 1.0f / std::sqrt((float) d_k);
     float beta  = 0.0f;
+
+    cublasSgemm(
+        blas_handle,
+        CUBLAS_OP_T, CUBLAS_OP_N,
+        N, N, d_k, 
+        &alpha,
+        d_K, d_k,
+        d_Q, d_k,   
+        &beta,
+        d_S, N      
+    );
+
 
     timer.tic();
 
@@ -97,9 +109,11 @@ int main() {
         d_S, N      
     );
 
-    cudaDeviceSynchronize(); // wait until GEMM finishes
+    // cudaDeviceSynchronize(); // wait until GEMM finishes
     ms = timer.toc();
     std::cout << "GEMM time: " << ms << " ms" << std::endl;
+    // std::cout << "Debug: " << (float)N*N*d_k << " " << std::endl;
+    std::cout << "Rate: " << (ms*1e-03) / ((float)N*N*d_k) << " " << std::endl;
 
     cublasDestroy(blas_handle);
 
@@ -109,9 +123,12 @@ int main() {
     
     timer.tic();
     expKernel<<<numBlocks, numThreads>>>(d_S, total);
-    cudaDeviceSynchronize();
-    ms = timer.toc();
+    // cudaDeviceSynchronize();
+    ms = timer.toc(); //e^S
 
     std::cout << "expKernel time: " << ms << " ms" << std::endl;
+    std::cout << "Rate: " << (ms*1e-03) / total << " " << std::endl;
+
+
     return 0;
 }
