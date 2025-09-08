@@ -181,6 +181,10 @@ int main() {
     std::cout << "(sec/FLOP): " << (ms*1e-03) / total << " " << std::endl;
 
 
+    cudaFree(d_Q);
+    cudaFree(d_K);
+    cudaFree(d_S);
+
     return 0;
 }
 
