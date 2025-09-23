@@ -23,3 +23,6 @@ day*/CMakeLists.txt
 *.dll
 *.a
 *.lib
+
+
+.devcontainer/
